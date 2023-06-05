@@ -12,10 +12,8 @@ from langchain.prompts.chat import (
 )
 import textwrap
 
-OPENAI_API_KEY = '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'
+# OPENAI_API_KEY = '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'
 # OPENAI_API_KEY = "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"
-
-embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY,model='text-embedding-ada-002')
 
 
 def create_db_from_youtube_video_url(video_url):
@@ -69,27 +67,64 @@ def get_response_from_query(db, query, k=4):
     return response, docs
 
 
-def main():
-    st.title("YouTube Video Q&A App")
-    global OPENAI_API_KEY
-    OPENAI_API_KEY = st.text_input("Enter Your OpenAI API key:")
+# app code 
 
-    video_url = st.text_input("Enter YouTube Video URL")
+st.title("YouTube Video Q&A App")
+
+def get_api_key():
+    input_text = st.text_input(label="OpenAI API Key ",  placeholder="Ex: sk-2twmA8tfCb8un4...", key="openai_api_key_input")
+    return input_text
+
+OPENAI_API_KEY = get_api_key()
+if OPENAI_API_KEY:
+    print("API call")
+    embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY,model='text-embedding-ada-002')
     
+video_url = st.text_input("Enter YouTube Video URL")
+if st.button("Train Model"):
+    if video_url:
+        db = create_db_from_youtube_video_url(video_url)
+        st.write('Train Model is successfully!')
+    else:
+        st.error("check Youtube URL!")
+     
+query = st.text_input("Ask a question")
     
-    if st.button("Train Model"):
-        if OPENAI_API_KEY:
-            db = create_db_from_youtube_video_url(video_url)
-            st.write('Train Model is successfully!')
-        
+if st.button("Get Answer"):
+    if query:
+        response, docs = get_response_from_query(db, query)
+        st.text_area("Answer", value=textwrap.fill(response, width=50))   
+    else:
+        st.error("Enter question!")
+
+# def main():
     
-    query = st.text_input("Ask a question")
+#     st.title("YouTube Video Q&A App")
+#     global OPENAI_API_KEY
+#     global embeddings
     
-    if st.button("Get Answer"):
-        if OPENAI_API_KEY:
-            response, docs = get_response_from_query(db, query)
-            st.text_area("Answer", value=textwrap.fill(response, width=50))
+#     try:
+#         OPENAI_API_KEY = st.text_input("Enter Your OpenAI API key:")
+#         embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY,model='text-embedding-ada-002')
+#     except Exception as e :
+#         print("sdkjfdfjn")
+#         st.write("plase check your API key!!!")
+    
+#     video_url = st.text_input("Enter YouTube Video URL")
+    
+#     try:
+#         if st.button("Train Model"):
+#             db = create_db_from_youtube_video_url(video_url)
+#             st.write('Train Model is successfully!')
+#     except Exception as e:
+#         st.write("plase check your Youtube URL!!!")
+    
+#     query = st.text_input("Ask a question")
+    
+#     if st.button("Get Answer"):
+#         response, docs = get_response_from_query(db, query)
+#         st.text_area("Answer", value=textwrap.fill(response, width=50))
 
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
