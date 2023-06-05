@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>YouTube Q&amp;A</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>YouTube Q&amp;A</h1>
+    <form method="POST" action="/">
+        <label for="youtube_url">Enter YouTube URL:</label>
+        <input type="text" id="youtube_url" name="youtube_url" required>
+        <button type="submit">Create DB</button>
+    </form>
+    {% if db_created %}
+        <p>Database created successfully!</p>
+        <hr>
+        <h2>Ask a question:</h2>
+        <form method="POST" action="/ask">
+            <label for="question">Question:</label>
+            <input type="text" id="question" name="question" required>
+            <button type="submit">Ask</button>
+        </form>
+    {% endif %}
+    <!-- <script src="{{ url_for('static', filename='script.js') }}"></script> -->
+</body>
+</html>
