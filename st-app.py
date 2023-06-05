@@ -80,19 +80,28 @@ if OPENAI_API_KEY:
     print("API call")
     embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY,model='text-embedding-ada-002')
     
-video_url = st.text_input("Enter YouTube Video URL")
+def get_url():
+    input_text = st.text_input(label="Enter YouTube Video URL", placeholder="Your YouTube Video URL...", key="URL_input")
+    return input_text
+
+video_url = get_url()
+
 if st.button("Train Model"):
     if video_url:
-        db = create_db_from_youtube_video_url(video_url)
+        st.session_state.db = create_db_from_youtube_video_url(video_url)
         st.write('Train Model is successfully!')
     else:
         st.error("check Youtube URL!")
-     
-query = st.text_input("Ask a question")
+    
+def get_query():
+    input_text = st.text_input(label="Ask a question", placeholder="question...", key="question_input")
+    return input_text
+ 
+query = get_query()
     
 if st.button("Get Answer"):
     if query:
-        response, docs = get_response_from_query(db, query)
+        response, docs = get_response_from_query(st.session_state.db, query)
         st.text_area("Answer", value=textwrap.fill(response, width=50))   
     else:
         st.error("Enter question!")
